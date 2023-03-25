@@ -45,7 +45,7 @@ jobs:
 #        if: success() && github.ref == 'refs/heads/master'
 #        uses: anothrNick/github-tag-action@1.61.0
 #        env:
-#          INITIAL_VERSION: 0.0.0
+#          INITIAL_VERSION: 0.1.0
 #          github_token: ${{ secrets.GITHUB_TOKEN }}
 #          release_branches: master
 #          prefix: v

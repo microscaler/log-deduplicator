@@ -23,3 +23,7 @@ clean:
 
 run:
 	target/debug/dedupfeed < $(LOG_FILE)
+
+docker:
+	cargo build --release
+	docker build .
