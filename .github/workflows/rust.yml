@@ -30,9 +30,8 @@ jobs:
       - uses: actions-rs/cargo@v1
         with:
           command: clippy
-# Need to fix tests as they currently have an issue
-#      - uses: actions-rs/cargo@v1
-#        with:
-#          command: test
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
       - name: build
         run: cargo build --release

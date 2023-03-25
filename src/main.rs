@@ -72,8 +72,8 @@ fn main() {
 
         if seen_count > 0 {
             println!(
-                "{} (seen {} times in the last {} seconds)",
-                line, seen_count, TIME_WINDOW
+                "{} (seen in the last {} seconds)",
+                line, TIME_WINDOW
             );
         }
     }
