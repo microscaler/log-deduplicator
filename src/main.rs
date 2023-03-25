@@ -27,7 +27,7 @@ fn main() {
             }
         }
         // need to remove the need for this sleep as it slows down ingestion.
-        thread::sleep(Duration::from_millis(1));
+        thread::sleep(Duration::from_nanos(1));
     }
 }
 
