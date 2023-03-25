@@ -45,9 +45,14 @@ fn main() {
             .duration_since(SystemTime::UNIX_EPOCH)
             .expect("Time went backwards")
             .as_secs();
-        let last_seen_time = seen_signatures.get(&signature_hash_hex).unwrap_or(&0);
+        let last_seen_time = seen_signatures
+            .get(&signature_hash_hex)
+            .cloned()
+            .unwrap_or(0);
 
-        let seen_count = if current_time - last_seen_time >= TIME_WINDOW {
+        let seen_count = if current_time < last_seen_time {
+            0
+        } else if current_time - last_seen_time >= TIME_WINDOW {
             println!("{}", line);
             seen_signatures.insert(signature_hash_hex.clone(), current_time);
             0
