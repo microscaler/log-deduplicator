@@ -7,25 +7,20 @@ use std::time::SystemTime;
 const TIME_WINDOW: u64 = 5;
 
 fn main() {
-    // Create an empty hashmap to store seen log signatures and their last seen timestamps
     let mut seen_signatures: HashMap<String, u64> = HashMap::new();
 
-    // Create a SHA-256 hasher
     let mut hasher = Sha256::new();
 
-    // Create a buffer to read log lines
     let stdin = io::stdin();
     let reader = stdin.lock();
     let mut lines = reader.lines();
 
-    // Loop forever, reading lines from standard input and processing them
     loop {
         let line = match lines.next() {
             Some(line) => line.expect("Failed to read line"),
-            None => break, // End of input stream
+            None => break,
         };
 
-        // Split the line into its individual parts
         let parts: Vec<&str> = line.split(' ').collect();
         let _timestamp = parts[0];
         let method = parts[1];
@@ -33,7 +28,7 @@ fn main() {
         let status = parts[3];
         let bytes_sent = parts[4];
         let referer = parts[5];
-        let user_agent = &(*parts[6..].join(" ").trim()).to_owned();
+        let user_agent = parts[6..].join(" ").trim().to_owned();
         let signature = format!(
             "{} {} {} {} {} {}",
             method, path, status, bytes_sent, referer, user_agent
@@ -50,23 +45,29 @@ fn main() {
             .duration_since(SystemTime::UNIX_EPOCH)
             .expect("Time went backwards")
             .as_secs();
-        let last_seen_time = *seen_signatures.get(&signature_hash_hex).unwrap_or(&0);
-        if current_time - last_seen_time >= TIME_WINDOW {
-            println!("{}", line);
-            seen_signatures
-            .iter_mut()
-            .find(|(_sig, ts)| **ts == last_seen_time)
-            .map(|(_, ts)| *ts += 1)
-            .expect("Couldn't find entry in seen_signatures");
-        } else {
-            let seen_count = seen_signatures
-                .iter_mut()
-                .find(|(_sig, ts)| **ts == last_seen_time)
-                .map(|(_, ts)| *ts += 1)
-                .expect("Couldn't find entry in seen_signatures");
+        let last_seen_time = seen_signatures.get(&signature_hash_hex).unwrap_or(&0);
 
+        let seen_count = if current_time - last_seen_time >= TIME_WINDOW {
+            println!("{}", line);
+            seen_signatures.insert(signature_hash_hex.clone(), current_time);
+            0
+        } else {
+            seen_signatures
+                .get_mut(&signature_hash_hex)
+                .map(|ts| {
+                    *ts += 1;
+                    *ts
+                })
+                .unwrap_or_else(|| {
+                    seen_signatures.insert(signature_hash_hex.clone(), 1);
+                    1
+                })
+                - 1
+        };
+
+        if seen_count > 0 {
             println!(
-                "{} (seen {:?} times in the last {} seconds)",
+                "{} (seen {} times in the last {} seconds)",
                 line, seen_count, TIME_WINDOW
             );
         }
