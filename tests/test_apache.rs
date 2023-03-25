@@ -1,5 +1,5 @@
-use std::io::{BufReader, Write};
 use std::io::BufRead;
+use std::io::{BufReader, Write};
 use std::process::{Command, Stdio};
 
 #[test]
@@ -13,7 +13,8 @@ fn test_deduplication() {
 
     // Feed in sample Apache log file data to the program's stdin
     let stdin = child.stdin.as_mut().expect("Failed to open stdin");
-    let file = std::fs::File::open("tests/sample_access_2.log").expect("Failed to open sample log file");
+    let file =
+        std::fs::File::open("tests/sample_access_2.log").expect("Failed to open sample log file");
     let reader = BufReader::new(file);
     for line in reader.lines() {
         writeln!(stdin, "{}", line.unwrap()).expect("Failed to write to stdin");

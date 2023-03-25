@@ -1,7 +1,7 @@
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::io::{self, BufRead};
-use std::time::{SystemTime};
+use std::time::SystemTime;
 
 // Define the time window for deduplication
 const TIME_WINDOW: u64 = 5;
@@ -36,7 +36,10 @@ fn main() {
 
         hasher.update(signature.as_bytes());
         let signature_hash = hasher.finalize_reset();
-        let signature_hash_hex = signature_hash.iter().map(|b| format!("{:02x}", b)).collect::<String>();
+        let signature_hash_hex = signature_hash
+            .iter()
+            .map(|b| format!("{:02x}", b))
+            .collect::<String>();
 
         let current_time = SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
