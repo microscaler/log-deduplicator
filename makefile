@@ -22,4 +22,4 @@ clean:
 	rm -rf target/
 
 run:
-	target/$(TARGET)/release/dedupfeed < $(LOG_FILE)
+	target/debug/dedupfeed < $(LOG_FILE)

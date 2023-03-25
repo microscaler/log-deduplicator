@@ -27,34 +27,32 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
-      - uses: actions-rs/cargo@v1
+
+      - name: clippy checks
+        uses: actions-rs/cargo@v1
         with:
           command: clippy
-      - uses: actions-rs/cargo@v1
+
+      - name: Unit tests
+        uses: actions-rs/cargo@v1
         with:
           command: test
+
       - name: build
         run: cargo build --release
 
-      - name: Create tag
-        if: success() && github.ref == 'refs/heads/master'
-        uses: anothrNick/github-tag-action@1.61.0
-        env:
-          INITIAL_VERSION: 0.0.0
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          release_branches: master
-          prefix: v
-          message: 'Version ${version}'
+#      - name: Create tag
+#        if: success() && github.ref == 'refs/heads/master'
+#        uses: anothrNick/github-tag-action@1.61.0
+#        env:
+#          INITIAL_VERSION: 0.0.0
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          release_branches: master
+#          prefix: v
+#          message: 'Version ${version}'
 
       - name: Build release binary
         run: cargo build --release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install semantic-release
-        run: npm install -g semantic-release @semantic-release/git @semantic-release/changelog
-
-      - name: Semantic Release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: semantic-release
